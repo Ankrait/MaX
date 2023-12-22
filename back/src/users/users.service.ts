@@ -14,15 +14,8 @@ export class UsersService {
     return await this.dbService.user.findUnique({ where: { login } });
   }
 
-  async getAllBySubLogin(subString: string) {
-    return (await this.dbService.user.findMany()).filter(u =>
-      u.login.includes(subString),
-    );
-  }
-
-  async setUserInfo(data: SetUserInfoDto) {
-    const { id, ...info } = data;
-    return await this.dbService.user.update({ where: { id }, data: info });
+  async setUserInfo(id: number, data: SetUserInfoDto) {
+    return await this.dbService.user.update({ where: { id }, data });
   }
 
   async create(data: {

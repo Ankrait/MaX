@@ -22,4 +22,15 @@ model User {
   age  Int?
   city String?
   sex  Sex?
+
+  Todo Todo[]
+}
+
+model Todo {
+  id   Int     @id @default(autoincrement())
+  text String  @default("")
+  done Boolean @default(false)
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 }
