@@ -20,7 +20,7 @@ export class AuthController {
   ) {
     const { token } = await this.authService.login(body);
 
-    this.cookieService.setToken(res, token);
+    this.cookieService.setTokens(res, token);
   }
 
   @Post('registration')
@@ -30,7 +30,7 @@ export class AuthController {
   ) {
     const { token } = await this.authService.registration(body);
 
-    this.cookieService.setToken(res, token);
+    this.cookieService.setTokens(res, token);
   }
 
   @Get('logout')

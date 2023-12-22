@@ -1,5 +1,3 @@
-import { LabelType, RoleType } from 'common/interfaces';
-
 export interface ISessionResponse {
   id: number;
   login: string;
@@ -17,79 +15,15 @@ export interface IRegistrationRequest {
   password: string;
 }
 
-export interface ILabel {
+export interface IUser {
   id: number;
-  text: string;
-  type: LabelType;
+  age: number | null;
+  city: string | null;
+  sex: 'MALE' | 'FEMALE' | null;
 }
 
-export interface ICreateLabelRequest extends Omit<ILabel, 'id'> {
-  groupId: number;
+export interface IUserRequest {
+  age: number | null;
+  city: string | null;
+  sex: 'MALE' | 'FEMALE' | null;
 }
-
-export interface IGroup {
-  id: number;
-  name: string;
-  image: string | null;
-}
-
-export interface IFullGroup extends IGroup {
-  stats: {
-    notesCount: number;
-    plansCount: {
-      finished: number;
-      started: number;
-    };
-  };
-  labels: ILabel[];
-}
-
-export interface ICreateGroupRequest {
-  name: string;
-  image?: string;
-}
-
-export interface ICollaborator {
-  id: number;
-  groupId: number;
-  role: RoleType;
-  userId: number;
-  userName: string;
-}
-
-export interface ICreateCollaboratorRequest
-  extends Pick<ICollaborator, 'userId' | 'groupId' | 'role'> {}
-
-export interface IDeleteCollaboratorRequest
-  extends Pick<ICollaborator, 'userId' | 'groupId'> {}
-
-export interface INote {
-  id: number;
-  message: string;
-  isImportant: boolean;
-  groupId: number;
-}
-
-export interface ICreateNoteRequest extends Pick<INote, 'groupId' | 'message'> {}
-
-export interface IUpdateNoteRequest
-  extends Pick<INote, 'id'>,
-    Pick<Partial<INote>, 'message' | 'isImportant'> {}
-
-export interface IPlan {
-  id: number;
-  message: string;
-  dateTo: string | null;
-  isFinished: boolean;
-  groupId: number;
-  labelId: number | null;
-  label: ILabel | null;
-}
-
-export interface ICreatePlanRequest
-  extends Pick<IPlan, 'groupId' | 'message'>,
-    Pick<Partial<IPlan>, 'dateTo' | 'isFinished'> {}
-
-export interface IUpdatePlanRequest
-  extends Pick<IPlan, 'id'>,
-    Omit<Partial<IPlan>, 'id' | 'groupId' | 'label'> {}

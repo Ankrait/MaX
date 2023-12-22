@@ -14,6 +14,10 @@ export class UsersService {
     return await this.dbService.user.findUnique({ where: { login } });
   }
 
+  async getUserInfo(id: number) {
+    return await this.dbService.user.findUnique({ where: { id } });
+  }
+
   async setUserInfo(id: number, data: SetUserInfoDto) {
     return await this.dbService.user.update({ where: { id }, data });
   }

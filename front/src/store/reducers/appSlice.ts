@@ -1,61 +1,86 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { AsyncThunkConfig } from 'common/interfaces';
 import { getSession } from './authSlice';
-import { getUserGroups } from './groupSlice';
+import { IUser, IUserRequest } from 'services/services.interface';
+import { userService } from 'services/services';
 
 export interface INotice {
-	message: string;
-	type: 'error' | 'success';
+  message: string;
+  type: 'error' | 'success';
 }
 
 interface IAppInitialState {
-	isAppInitialized: boolean;
-	notice: INotice | null;
-	loading: boolean;
+  isAppInitialized: boolean;
+  loading: boolean;
+  userInfo: IUser | null;
 }
 
 const initialState: IAppInitialState = {
-	isAppInitialized: false,
-	notice: null,
-	loading: false,
+  isAppInitialized: false,
+  loading: false,
+  userInfo: null,
 };
 
 export const appSlice = createSlice({
-	name: 'app',
-	initialState,
-	reducers: {
-		setNotice: (state, action: PayloadAction<INotice | null>) => {
-			state.notice = action.payload;
-		},
-		setLoading: (state, action: PayloadAction<boolean>) => {
-			state.loading = action.payload;
-		},
-	},
-	extraReducers: (builder) => {
-		builder.addCase(initialize.fulfilled, (state) => {
-			state.isAppInitialized = true;
-		});
-		builder.addCase(initialize.rejected, (state) => {
-			state.isAppInitialized = true;
-		});
-	},
+  name: 'app',
+  initialState,
+  reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+  },
+  extraReducers: builder => {
+    builder
+      .addCase(initialize.fulfilled, state => {
+        state.isAppInitialized = true;
+      })
+      .addCase(initialize.rejected, state => {
+        state.isAppInitialized = true;
+      })
+      .addCase(getUser.fulfilled, (state, { payload }) => {
+        state.userInfo = payload;
+      })
+      .addCase(setInfo.fulfilled, (state, { payload }) => {
+        state.userInfo = payload;
+      });
+  },
 });
 
 export const appReducer = appSlice.reducer;
-export const { setNotice, setLoading } = appSlice.actions;
+export const { setLoading } = appSlice.actions;
 
-export const initialize = createAsyncThunk<void, void, AsyncThunkConfig>(
-	'app/initialize',
-	async (_, { dispatch, rejectWithValue }) => {
-		dispatch(setLoading(true));
-		try {
-			await dispatch(getSession());
-			await dispatch(getUserGroups());
-		} catch (error) {
-			return rejectWithValue('[initialize]: Error');
-		} finally {
-			dispatch(setLoading(false));
-		}
-	}
+export const initialize = createAsyncThunk<void, void, any>(
+  'app/initialize',
+  async (_, { dispatch, rejectWithValue }) => {
+    dispatch(setLoading(true));
+    try {
+      await dispatch(getSession());
+    } catch (error) {
+      return rejectWithValue('[initialize]: Error');
+    } finally {
+      dispatch(setLoading(false));
+    }
+  },
+);
+
+export const getUser = createAsyncThunk<IUser, void, any>(
+  'app/getUser',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await userService.getInfo();
+    } catch (error) {
+      return rejectWithValue('[getUser]: Error');
+    }
+  },
+);
+
+export const setInfo = createAsyncThunk<IUser, IUserRequest, any>(
+  'app/setInfo',
+  async (data, { rejectWithValue }) => {
+    try {
+      return await userService.setInfo(data);
+    } catch (error) {
+      return rejectWithValue('[setInfo]: Error');
+    }
+  },
 );

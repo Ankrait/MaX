@@ -1,59 +1,27 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 
-import { GroupLayout, RootLayout } from 'layouts';
-import { Account, GroupMain, Home, Login, Main, Notes, Plans, Registration, Settings } from 'pages';
+import RootLayout from 'layouts/RootLayout';
+import Home from 'pages/Home';
+import Profile from 'pages/Profile';
+import Login from 'pages/Login';
+import Registration from 'pages/Registration';
 
 export const createRouter = (isAuth: boolean) => {
   return createBrowserRouter([
     {
       path: '/',
-      children: isAuth
-        ? [
-            {
-              path: '/',
-              element: <RootLayout />,
-              children: [
-                {
-                  path: '/',
-                  element: <Main />,
-                },
-                {
-                  path: '/account',
-                  element: <Account />,
-                },
-                {
-                  path: '/group/:id',
-                  element: <GroupLayout />,
-                  children: [
-                    {
-                      path: '/group/:id',
-                      element: <GroupMain />,
-                    },
-                    {
-                      path: '/group/:id/notes',
-                      element: <Notes />,
-                    },
-                    {
-                      path: '/group/:id/plans',
-                      element: <Plans />,
-                    },
-                    {
-                      path: '/group/:id/settings',
-                      element: <Settings />,
-                    },
-                  ],
-                },
-                {
-                  path: '/auth/*',
-                  element: <Navigate to="/" />,
-                },
-              ],
-            },
-          ]
-        : [
+      children: [
+        {
+          path: '/',
+          element: <RootLayout />,
+          children: [
             {
               path: '/',
               element: <Home />,
+            },
+            {
+              path: '/profile',
+              element: <Profile />,
             },
             {
               path: '/auth',
@@ -73,6 +41,8 @@ export const createRouter = (isAuth: boolean) => {
               ],
             },
           ],
+        },
+      ],
     },
   ]);
 };
