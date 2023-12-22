@@ -3,16 +3,10 @@ import { Response } from 'express';
 
 @Injectable()
 export class CookieService {
-  static tokenKey = 'access-token';
+  static accessKey = 'access-token';
   static refreshKey = 'refresh-token';
 
-  setTokens(res: Response, token: string, refresh: string) {
-    res.cookie(CookieService.tokenKey, token, {
-      httpOnly: true,
-      maxAge: 60 * 30 * 1000,
-      sameSite: 'none',
-      secure: true,
-    });
+  setTokens(res: Response, refresh: string) {
     res.cookie(CookieService.refreshKey, refresh, {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -22,6 +16,6 @@ export class CookieService {
   }
 
   removeToken(res: Response) {
-    res.clearCookie(CookieService.tokenKey);
+    res.clearCookie(CookieService.refreshKey);
   }
 }

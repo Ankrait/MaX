@@ -9,17 +9,24 @@ import {
 
 export const authService = {
   async getSession() {
-    const { data } = await baseConfig.get<ISessionResponse>('/auth/session');
+    const { data } = await baseConfig.get<ISessionResponse>('/auth/session', {
+      withCredentials: true,
+    });
     return data;
   },
   async login(req: ILoginRequest) {
-    await baseConfig.post('/auth/login', req);
+    const { data } = await baseConfig.post('/auth/login', req, { withCredentials: true });
+    localStorage.setItem('token', data.token);
   },
   async registration(req: IRegistrationRequest) {
-    await baseConfig.post('/auth/registration', req);
+    const { data } = await baseConfig.post('/auth/registration', req, {
+      withCredentials: true,
+    });
+    localStorage.setItem('token', data.token);
   },
   async logout() {
     await baseConfig.get('/auth/logout');
+    localStorage.setItem('token', '');
   },
 };
 
@@ -31,5 +38,5 @@ export const userService = {
   async setInfo(req: IUserRequest) {
     const { data } = await baseConfig.put<IUser>(`/users`, req);
     return data;
-  }
+  },
 };

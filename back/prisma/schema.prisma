@@ -7,30 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Sex {
-  MALE
-  FEMALE
-}
-
 model User {
-  id    Int    @id @default(autoincrement())
-  login String @unique
-  email String @unique
+  id    Int     @id @default(autoincrement())
+  login String  @unique
+  email String  @unique
   hash  String
   salt  String
+  age   Int?
+  city  String?
+  sex   Sex?
 
-  age  Int?
-  city String?
-  sex  Sex?
-
-  Todo Todo[]
+  Todo  Todo[]
+  Token Token?
 }
 
 model Todo {
-  id   Int     @id @default(autoincrement())
-  text String  @default("")
-  done Boolean @default(false)
-
+  id     Int     @id @default(autoincrement())
+  text   String  @default("")
+  done   Boolean @default(false)
   userId Int
+  user   User    @relation(fields: [userId], references: [id])
+}
+
+model Token {
+  id    Int    @id @default(autoincrement())
+  token String
+
+  userId Int  @unique
   user   User @relation(fields: [userId], references: [id])
+}
+
+enum Sex {
+  MALE
+  FEMALE
 }

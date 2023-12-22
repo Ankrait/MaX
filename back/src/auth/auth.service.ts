@@ -31,13 +31,23 @@ export class AuthService {
       throw new UnauthorizedException(errorMessage);
     }
 
-    const token = await this.jwtService.signAsync({
+    const token = await this.jwtService.signAsync(
+      {
+        id: user.id,
+        login: user.login,
+        email: user.email,
+      },
+      { expiresIn: '3s' },
+    );
+    const refresh = await this.jwtService.signAsync({
       id: user.id,
       login: user.login,
       email: user.email,
     });
 
-    return { token };
+    await this.userService.addToken(user.id, refresh);
+
+    return { token, refresh };
   }
 
   async registration(dto: RegistrationDto) {
@@ -61,12 +71,22 @@ export class AuthService {
       hash,
     });
 
-    const token = await this.jwtService.signAsync({
+    const token = await this.jwtService.signAsync(
+      {
+        id: newUser.id,
+        login: newUser.login,
+        email: newUser.email,
+      },
+      { expiresIn: '30m' },
+    );
+    const refresh = await this.jwtService.signAsync({
       id: newUser.id,
       login: newUser.login,
       email: newUser.email,
     });
 
-    return { token };
+    await this.userService.addToken(newUser.id, refresh);
+
+    return { token, refresh };
   }
 }

@@ -1,11 +1,11 @@
 import {
   CanActivate,
   ExecutionContext,
+  HttpException,
+  HttpStatus,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { CookieService } from './cookie.service';
 import { JwtService } from '@nestjs/jwt';
 import { SessionDto } from './dto';
 
@@ -15,20 +15,23 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest() as Request;
-    const token = req.cookies[CookieService.tokenKey];
+    const token = req.headers.authorization;
 
     if (!token) {
-      throw new UnauthorizedException();
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 
     try {
-      const sessionInfo = await this.jwtService.verifyAsync<SessionDto>(token, {
-        secret: process.env.JWT_SECRET,
-      });
+      const sessionInfo = await this.jwtService.verifyAsync<SessionDto>(
+        token.toString(),
+        {
+          secret: process.env.JWT_SECRET,
+        },
+      );
 
       req['session'] = sessionInfo;
     } catch {
-      throw new UnauthorizedException();
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 
     return true;
